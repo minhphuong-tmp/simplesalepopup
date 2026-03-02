@@ -143,17 +143,20 @@ Provide your analysis in this structure:
 [Provide specific guidance for testing in Firebase emulators, using specific shop configurations, or other relevant context]
 ```
 
-## Browser Testing with Playwright MCP
+## Browser Testing with Playwright CLI
 
-For manual testing in browser, use **Playwright MCP** tools:
+For manual testing in browser, use **Playwright CLI** commands:
 
-**Use `/browser-test` command** or Playwright MCP tools directly:
-```
-mcp__playwright__browser_navigate - Navigate to URL
-mcp__playwright__browser_snapshot - Get page accessibility snapshot
-mcp__playwright__browser_click - Click elements
-mcp__playwright__browser_type - Type text
-mcp__playwright__browser_take_screenshot - Capture screenshots
+**Use `/browser-test` command** or Playwright CLI directly:
+```bash
+playwright-cli open --headed --persistent "URL"  # Open browser (persistent session)
+playwright-cli goto "URL"                         # Navigate to URL
+playwright-cli snapshot                           # Get page accessibility snapshot
+playwright-cli click e5                           # Click element by ref
+playwright-cli type "text"                        # Type text
+playwright-cli screenshot                         # Capture screenshot
+playwright-cli console error                      # Check console errors
+playwright-cli close                              # Close browser
 ```
 
 **Test Targets:**
@@ -171,6 +174,6 @@ mcp__playwright__browser_take_screenshot - Capture screenshots
 - Reference specific files, functions, and features when possible
 - If you need more context about the changes, ask specific questions
 - Balance comprehensiveness with developer time constraints
-- **Use Playwright MCP** for browser testing when UI validation is needed
+- **Use Playwright CLI** for browser testing when UI validation is needed
 
 Your goal is to give developers confidence that their changes won't introduce bugs while being realistic about testing scope. Help them test smarter, not just more.

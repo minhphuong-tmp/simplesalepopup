@@ -1,8 +1,8 @@
 ---
-description: Test the Shopify app in browser using Playwright MCP
+description: Test the Shopify app in browser using Playwright CLI
 ---
 
-Use Playwright MCP to test the app in browser. Read `shopify.app.toml` first to get store and app info.
+Use Playwright CLI to test the app in browser. Read `shopify.app.toml` first to get store and app info.
 
 ## What to Test
 
@@ -33,11 +33,22 @@ Read shopify.app.toml to get:
 - **Theme Editor**: `https://admin.shopify.com/store/{store}/themes/current/editor`
 
 ### 3. Test Flow
-1. Navigate to URL using `mcp__playwright__browser_navigate`
-2. Wait for load using `mcp__playwright__browser_wait_for`
-3. Take snapshot using `mcp__playwright__browser_snapshot`
-4. Check errors using `mcp__playwright__browser_console_messages`
-5. Interact with elements using `mcp__playwright__browser_click`
+```bash
+# 1. Open browser with persistent session
+playwright-cli open --headed --persistent "URL"
+# 2. Take snapshot to get element refs
+playwright-cli snapshot
+# 3. Check console errors
+playwright-cli console error
+# 4. Interact with elements (use refs from snapshot)
+playwright-cli click e5
+# 5. Navigate to another page
+playwright-cli goto "URL"
+# 6. Screenshot if needed
+playwright-cli screenshot
+# 7. Close when done
+playwright-cli close
+```
 
 ### 4. Report Results
 - Screenshot if needed

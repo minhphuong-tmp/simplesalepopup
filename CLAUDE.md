@@ -49,7 +49,7 @@ firestore-indexes/        # Compound query indexes (run yarn firestore:build)
 | `.claude/skills/redis-caching/` | Redis caching, TTL, circuit breaker |
 | `.claude/skills/cloud-tasks/` | Cloud Tasks background processing |
 | `.claude/skills/security/` | Auth, IDOR prevention, webhook verification |
-| `.claude/skills/shopify-testing/` | Browser testing with Playwright MCP |
+| `.claude/skills/shopify-testing/skill.md` | Browser testing with Playwright CLI |
 
 ## Commands
 
@@ -155,7 +155,7 @@ To test the app, use these URLs (read from `shopify.app.toml`):
 - **Example**: `https://thomas-joy-klaviyo-prod.myshopify.com`
 - **Theme extension preview**: Available in Dev Console when running `yarn dev`
 
-Use Playwright MCP to open and test the app in browser.
+Use Playwright CLI (`playwright-cli`) to open and test the app in browser. Always use `--headed --persistent` flags to keep login session.
 
 ## Workflows
 
