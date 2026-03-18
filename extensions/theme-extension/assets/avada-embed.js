@@ -1,5 +1,5 @@
 (function() {
-  const BASE_URL = 'https://terrorists-ipod-subsidiaries-laundry.trycloudflare.com/scripttag';
+  const BASE_URL = 'https://spell-efficiently-pros-grams.trycloudflare.com/scripttag';
 
   const scriptElement = document.createElement('script');
   scriptElement.type = 'text/javascript';
@@ -8,3 +8,5 @@
   const firstScript = document.getElementsByTagName('script')[0];
   firstScript.parentNode.insertBefore(scriptElement, firstScript);
 })();
+// trigger hot reload again 11
+

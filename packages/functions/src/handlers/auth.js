@@ -1,6 +1,6 @@
 import App from 'koa';
 import 'isomorphic-fetch';
-import {contentSecurityPolicy, shopifyAuth} from '@avada/core';
+import { contentSecurityPolicy, shopifyAuth } from '@avada/core';
 import shopifyConfig from '@functions/config/shopify';
 import render from 'koa-ejs';
 import path from 'path';
@@ -8,6 +8,8 @@ import createErrorHandler from '@functions/middleware/errorHandler';
 import firebase from 'firebase-admin';
 import appConfig from '@functions/config/app';
 import shopifyOptionalScopes from '@functions/config/shopifyOptionalScopes';
+import { registerWebhooks } from '@functions/helpers/webhookHelpers';
+import { registerScriptTag } from '@functions/helpers/scriptTagHelpers';
 
 if (firebase.apps.length === 0) {
   firebase.initializeApp();
@@ -50,6 +52,17 @@ app.use(
       return (ctx.body = {
         success: true
       });
+    },
+    afterAuth: async ctx => {
+      // Runs every time user opens the app to ensure webhooks point to latest Cloudflare Tunnel
+      const { shop, accessToken } = ctx.state.shopify || {};
+      if (shop && accessToken) {
+        // Not having full shopData, so we pass domain and token
+        await Promise.all([
+          registerWebhooks(shop, accessToken),
+          registerScriptTag(shop, accessToken)
+        ]);
+      }
     },
     optionalScopes: shopifyOptionalScopes
   }).routes()

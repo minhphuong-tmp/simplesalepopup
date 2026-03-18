@@ -22,6 +22,7 @@
     "axios": "^0.27.2",
     "firebase": "9.10.0",
     "history": "^4.10.1",
+    "moment": "^2.30.1",
     "prop-types": "^15.8.1",
     "qs-stringify": "^1.2.1",
     "react": "18.2.0",

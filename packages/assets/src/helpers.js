@@ -1,9 +1,9 @@
 import axios from 'axios';
 import createApp from '@shopify/app-bridge';
-import {Redirect} from '@shopify/app-bridge/actions';
-import {initializeApp} from 'firebase/app';
-import {getAuth} from 'firebase/auth';
-import {getApiPrefix} from '@functions/const/app';
+import { Redirect } from '@shopify/app-bridge/actions';
+import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
+import { getApiPrefix } from '@functions/const/app';
 import isEmbeddedAppEnv from '@assets/helpers/isEmbeddedAppEnv';
 
 /**
@@ -40,7 +40,7 @@ export const embedApp = createEmbedApp();
  * Used for standalone mode API requests with Firebase auth.
  * @type {import('axios').AxiosInstance}
  */
-export const client = axios.create({timeout: 60000});
+export const client = axios.create({ timeout: 60000 });
 
 /**
  * Universal API client that works in both embedded and standalone modes.
@@ -116,10 +116,13 @@ function createApi() {
   if (isEmbeddedAppEnv) {
     const fetchFunction = fetch;
     return async (uri, options = {}) => {
-      if (options.body) {
-        options.body = JSON.stringify(options.body);
+      const method = (options.method || 'GET').toUpperCase();
+      if (method !== 'GET') {
         options.headers = options.headers || {};
         options.headers['Content-Type'] = 'application/json';
+      }
+      if (options.body) {
+        options.body = JSON.stringify(options.body);
       }
       const response = await fetchFunction(prefix + uri, options);
       checkHeadersForReauthorization(response.headers, embedApp);
@@ -129,11 +132,14 @@ function createApi() {
 
   const sendRequest = async (uri, options) => {
     const idToken = await auth.currentUser.getIdToken(false);
+    const method = (options.method || 'GET').toUpperCase();
+    const isNotGet = method !== 'GET';
     return client
       .request({
         ...options,
         headers: {
           accept: 'application/json',
+          ...(isNotGet ? { 'content-type': 'application/json' } : {}),
           ...(options.headers || {}),
           'x-auth-token': idToken
         },

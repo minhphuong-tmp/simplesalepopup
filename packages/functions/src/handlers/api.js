@@ -4,12 +4,13 @@ import * as errorService from '@functions/services/errorService';
 import apiRouter from '@functions/routes/api';
 import render from 'koa-ejs';
 import path from 'path';
-import {verifyEmbedRequest} from '@avada/core';
+import { verifyEmbedRequest } from '@avada/core';
 import shopifyConfig from '@functions/config/shopify';
 import appConfig from '@functions/config/app';
 import shopifyOptionalScopes from '@functions/config/shopifyOptionalScopes';
-import {publishTopicAsync} from '@functions/helpers/pubsub/publishTopic';
-import {getShopByField, getShopByShopifyDomain} from '@functions/repositories/shopRepository';
+import { publishTopicAsync } from '@functions/helpers/pubsub/publishTopic';
+import { getShopByField, getShopByShopifyDomain } from '@functions/repositories/shopRepository';
+import { handleAfterInstall } from '@functions/services/afterInstallService';
 
 // Initialize all demand configuration for an application
 const api = new App();
@@ -43,9 +44,16 @@ api.use(
     },
     afterInstall: async ctx => {
       try {
-        const {shopifyDomain} = ctx.state.shopify.shop;
-        console.log('After install for' + shopifyDomain);
+        const { shopifyDomain } = ctx.state.shopify.shop;
+        console.log('After install for', shopifyDomain);
         const shop = await getShopByShopifyDomain(shopifyDomain);
+        if (!shop) {
+          console.error('Shop not found for domain:', shopifyDomain);
+          return;
+        }
+        // Fire-and-forget: don't block the OAuth response
+        handleAfterInstall(shop.id).catch(e => console.error('handleAfterInstall error:', e));
+        // Also publish to Pub/Sub for production background processing
         publishTopicAsync('backgroundHandling', {
           type: 'afterInstall',
           shopId: shop.id,

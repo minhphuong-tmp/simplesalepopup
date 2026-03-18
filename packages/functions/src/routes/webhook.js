@@ -9,7 +9,7 @@ const router = new Router({
 router.use(verifyWebhook);
 
 // Add your webhook routes here
-// Example: router.post('/order/new', webhookController.listenNewOrder);
+router.post('/order/create', webhookController.listenNewOrder);
 router.post('/app/uninstalled', webhookController.appUninstalled);
 
 export default router;

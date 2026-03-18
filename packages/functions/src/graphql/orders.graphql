@@ -1,0 +1,36 @@
+{
+  orders(first: 30, sortKey: CREATED_AT, reverse: true) {
+    edges {
+      node {
+        id
+        legacyResourceId
+        createdAt
+        customer {
+          firstName
+          defaultAddress {
+            city
+            country
+          }
+        }
+        lineItems(first: 1) {
+          edges {
+            node {
+              title
+              product {
+                legacyResourceId
+                handle
+                images(first: 1) {
+                  edges {
+                    node {
+                      url
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

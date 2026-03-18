@@ -98,15 +98,14 @@ module.exports = {
             options: {
               modules: {
                 auto: true,
-                localIdentName: isProduction ? '[hash:base64:8]' : '[path][name]__[local]',
-                exportLocalsConvention: 'camelCase'
+                localIdentName: isProduction ? '[hash:base64:8]' : '[path][name]__[local]'
               }
             }
           },
           {
             loader: 'sass-loader',
             options: {
-              implementation: require('sass-embedded'),
+
               sassOptions: {
                 includePaths: [
                   path.resolve(__dirname, '../../assets/src/styles'),
@@ -140,7 +139,7 @@ module.exports = {
       ENVIRONMENT: process.env.ENVIRONMENT,
       HOST: process.env.HOST || '',
       PUBLIC_PATH: PUBLIC_PATH,
-      API_URL: process.env.API_URL || '',
+      API_URL: process.env.HOST || process.env.API_URL || '',
       APP_URL: process.env.APP_URL || '',
       SHOPIFY_CDN_URL: process.env.SHOPIFY_CDN_URL || PUBLIC_PATH
     }),

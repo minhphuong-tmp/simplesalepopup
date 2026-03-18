@@ -1,0 +1,43 @@
+.Avada-DesktopPosition {
+    width: 110px;
+    height: 70px;
+    border-radius: 1rem;
+    position: relative;
+    border: 3px solid #f4f6f8;
+    cursor: pointer;
+
+    .Avada-DesktopPosition__Input {
+        background-color: #f4f6f8;
+        width: 60px;
+        height: 30px;
+        position: absolute;
+    }
+
+    .Avada-DesktopPosition__Input--top-left {
+        top: 5px;
+        left: 5px;
+    }
+
+    .Avada-DesktopPosition__Input--top-right {
+        top: 5px;
+        right: 5px;
+    }
+
+    .Avada-DesktopPosition__Input--bottom-right {
+        bottom: 5px;
+        right: 5px;
+    }
+
+    .Avada-DesktopPosition__Input--bottom-left {
+        bottom: 5px;
+        left: 5px;
+    }
+}
+
+.Avada-DesktopPosition--selected {
+    border-color: #5c6ac4 !important;
+
+    .Avada-DesktopPosition__Input {
+        background-color: #5c6ac4 !important;
+    }
+}

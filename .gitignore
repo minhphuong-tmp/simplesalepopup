@@ -80,6 +80,8 @@ stats.json
 .runtimeconfig.json
 serviceAccount.json
 serviceAccount.*.json
+service-account.json
+service-account.*.json
 
 # Shopify
 shopify.**.toml
