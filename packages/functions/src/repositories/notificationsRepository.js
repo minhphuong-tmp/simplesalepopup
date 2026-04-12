@@ -1,9 +1,8 @@
-import {Firestore} from '@google-cloud/firestore';
-import {prepareDoc, paginateQuery, getOrderBy} from './helper';
+import { Firestore } from '@google-cloud/firestore';
+import { prepareDoc, paginateQuery, getOrderBy } from './helper';
 
 const firestore = new Firestore();
 const COLLECTION_NAME = 'notifications';
-/** @type {CollectionReference} */
 const collection = firestore.collection(COLLECTION_NAME);
 
 /**
@@ -12,14 +11,15 @@ const collection = firestore.collection(COLLECTION_NAME);
  * @param {Object} params.query - {order, after, before, limit}
  * @returns {Promise<{data: Array, count: number, pageInfo: Object}>}
  */
-export async function getNotificationsList({shopId, query = {}}) {
-  const {order} = query;
-  let queriedRef = collection.where('shopId', '==', shopId);
+export async function getNotificationsList({ shopId, query = {} }) {
+  const { order } = query;
+  const { sortField, direction } = getOrderBy(order || 'timestamp_desc');
 
-  const {sortField, direction} = getOrderBy(order || 'timestamp_desc');
-  queriedRef = queriedRef.orderBy(sortField, direction);
+  const queriedRef = collection
+    .where('shopId', '==', shopId)
+    .orderBy(sortField, direction);
 
-  return paginateQuery({queriedRef, collection, query});
+  return paginateQuery({ queriedRef, collection, query });
 }
 
 /**
@@ -29,24 +29,23 @@ export async function getNotificationsList({shopId, query = {}}) {
  * @returns {Promise<{success: boolean, data: Object}>}
  */
 export async function upsertNotification(shopId, data) {
-  if (!data?.orderId) return {success: false, data: null};
+  if (!data?.orderId) return { success: false, data: null };
 
   const now = new Date();
   const docId = `${shopId}_${data.orderId}`;
   const docRef = collection.doc(docId);
-
   const docData = {
     ...data,
     shopId,
     updatedAt: now
   };
-
+  // if not exist, create new doc
   const existing = await docRef.get();
   if (!existing.exists) {
-    await docRef.set({...docData, createdAt: now});
+    await docRef.set({ ...docData, createdAt: now });
   } else {
     await docRef.update(docData);
   }
 
-  return {success: true, data: {id: docId, ...docData}};
+  return { success: true, data: { id: docId, ...docData } };
 }

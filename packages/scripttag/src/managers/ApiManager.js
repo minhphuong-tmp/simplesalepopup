@@ -7,7 +7,7 @@ export default class ApiManager {
   };
 
   getApiData = async () => {
-    const shopifyDomain = window.Shopify.shop;
+    const shopifyDomain = window.AVADA_SHOP_DOMAIN || (window.Shopify && window.Shopify.shop);
     const response = await makeRequest(
       `${process.env.API_URL}/clientApi/widget?shop=${shopifyDomain}`
     );
@@ -17,3 +17,7 @@ export default class ApiManager {
     return { notifications, settings };
   };
 }
+
+
+
+

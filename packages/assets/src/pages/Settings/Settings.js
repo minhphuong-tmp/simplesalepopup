@@ -8,8 +8,7 @@ import sneakerImg from '@assets/images/product-sneaker.png';
 import useFetchApi from '@assets/hooks/api/useFetchApi';
 import useEditApi from '@assets/hooks/api/useEditApi';
 import useInput from '@assets/hooks/form/useInput';
-import {DEFAULT_SETTINGS} from '@functions/const/settings';
-
+import { DEFAULT_SETTINGS } from '@functions/const/settings';
 
 const tabs = [
   { id: 'display', content: 'Display' },
@@ -27,7 +26,8 @@ export default function Settings() {
 
   const { handleEdit: saveSettings, editing: saving } = useEditApi({
     url: '/settings',
-    successMsg: 'Settings saved successfully!'
+    successMsg: 'Settings saved successfully!',
+    errorMsg: 'Failed to save settings'
   });
 
 
@@ -35,7 +35,7 @@ export default function Settings() {
 
   useEffect(() => {
     if (!fetching && data) {
-      setSettings({...DEFAULT_SETTINGS, ...data});
+      setSettings({ ...DEFAULT_SETTINGS, ...data });
     }
   }, [fetching, data]);
 

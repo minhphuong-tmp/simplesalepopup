@@ -17,6 +17,7 @@ const sortOptions = [
  */
 export default function Notifications() {
     const [sortValue, setSortValue] = useState('timestamp_desc');
+    const [selectedItems, setSelectedItems] = useState([]);
 
     const { data: notifications, count, pageInfo, loading, fetchApi } = useFetchApi({
         url: '/notifications',
@@ -50,7 +51,7 @@ export default function Notifications() {
             subtitle="List of sales notification from Shopify"
             primaryAction={{
                 content: 'Sync Data',
-                onAction: syncData,
+                onAction: () => syncData({ limit: 30 }),
                 loading: syncing
             }}
         >
@@ -59,15 +60,19 @@ export default function Notifications() {
                     <ResourceList
                         resourceName={{singular: 'notification', plural: 'notifications'}}
                         items={notifications}
-                        renderItem={NotificationItem}
+                        renderItem={(item) => <NotificationItem {...item} />}
                         headerContent={`Showing ${count || notifications.length} notifications`}
                         sortOptions={sortOptions}
                         sortValue={sortValue}
                         onSortChange={handleSortChange}
+                        selectedItems={selectedItems}
+                        onSelectionChange={setSelectedItems}
+                        selectable
                         emptyState={
                             <EmptyState
                                 heading="No notifications yet"
-                                action={{content: 'Sync Data', onAction: syncData}}
+                                action={{content: 'Sync Data', onAction: () => syncData({ limit: 30 })}}
+
                             >
                                 <p>Sync your Shopify orders to see sale notifications here.</p>
                             </EmptyState>

@@ -8,8 +8,8 @@ import createErrorHandler from '@functions/middleware/errorHandler';
 import firebase from 'firebase-admin';
 import appConfig from '@functions/config/app';
 import shopifyOptionalScopes from '@functions/config/shopifyOptionalScopes';
-import { registerWebhooks } from '@functions/helpers/webhookHelpers';
-import { registerScriptTag } from '@functions/helpers/scriptTagHelpers';
+import { registerWebhooks } from '@functions/services/webhookService';
+import { initShopify } from '@functions/services/shopifyService';
 
 if (firebase.apps.length === 0) {
   firebase.initializeApp();
@@ -47,20 +47,27 @@ app.use(
     },
     hostName: appConfig.baseUrl,
     isEmbeddedApp: true,
-    afterThemePublish: ctx => {
-      // Publish assets when theme is published or changed here
-      return (ctx.body = {
+    afterThemePublish: context => {
+      return (context.body = {
         success: true
       });
     },
-    afterAuth: async ctx => {
-      // Runs every time user opens the app to ensure webhooks point to latest Cloudflare Tunnel
-      const { shop, accessToken } = ctx.state.shopify || {};
+    afterAuth: async context => {
+      const { shop, accessToken } = context.state.shopify || {};
       if (shop && accessToken) {
-        // Not having full shopData, so we pass domain and token
+        const shopData = { shopifyDomain: shop, accessToken };
+
+        // delete old script tag
+        try {
+          const shopify = initShopify(shopData);
+          const existing = await shopify.scriptTag.list();
+          await Promise.all(existing.map(scriptTag => shopify.scriptTag.delete(scriptTag.id)));
+        } catch (e) {
+          console.error(e.message);
+        }
+
         await Promise.all([
-          registerWebhooks(shop, accessToken),
-          registerScriptTag(shop, accessToken)
+          registerWebhooks(shopData)
         ]);
       }
     },
@@ -68,9 +75,8 @@ app.use(
   }).routes()
 );
 
-// Handling all errors
-app.on('error', err => {
-  console.error(err);
+app.on('error', error => {
+  console.error(error);
 });
 
 export default app;

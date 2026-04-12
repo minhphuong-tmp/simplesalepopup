@@ -1,5 +1,4 @@
 import Router from 'koa-router';
-import * as sampleController from '@functions/controllers/sampleController';
 import * as shopController from '@functions/controllers/shopController';
 import * as subscriptionController from '@functions/controllers/subscriptionController';
 import * as appNewsController from '@functions/controllers/appNewsController';
@@ -10,13 +9,12 @@ import {
   validateCreateSubscription,
   validateUpdateSubscription
 } from '@functions/middleware/subscriptionValidation';
-import {validateUpdateSettings} from '@functions/middleware/settingsValidation';
-import {validateGetNotifications, validateSyncNotifications} from '@functions/middleware/notificationsValidation';
+import { validateUpdateSettings } from '@functions/middleware/settingsValidation';
+import { validateGetNotifications, validateSyncNotifications } from '@functions/middleware/notificationsValidation';
 
 export default function apiRouter(isEmbed = false) {
   const router = new Router({ prefix: getApiPrefix(isEmbed) });
 
-  router.get('/samples', sampleController.exampleAction);
   router.get('/shops', shopController.getUserShops);
   router.get('/appNews', appNewsController.getList);
 

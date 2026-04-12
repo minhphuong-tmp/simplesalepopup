@@ -1,5 +1,5 @@
-(function() {
-  const BASE_URL = 'https://spell-efficiently-pros-grams.trycloudflare.com/scripttag';
+(function () {
+  const BASE_URL = 'https://align-ridge-launches-previously.trycloudflare.com/scripttag';
 
   const scriptElement = document.createElement('script');
   scriptElement.type = 'text/javascript';
@@ -8,5 +8,3 @@
   const firstScript = document.getElementsByTagName('script')[0];
   firstScript.parentNode.insertBefore(scriptElement, firstScript);
 })();
-// trigger hot reload again 11
-

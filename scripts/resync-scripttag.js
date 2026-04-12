@@ -61,7 +61,7 @@ function firestoreGet(path) {
       port: 8080,
       path: `/v1/projects/${FIRESTORE_PROJECT_ID}/databases/(default)/documents/${path}`,
       method: 'GET',
-      headers: {'Content-Type': 'application/json'}
+      headers: { 'Content-Type': 'application/json' }
     };
     const req = require('http').request(options, res => {
       let data = '';
@@ -116,7 +116,7 @@ function shopifyRequest(shopDomain, accessToken, method, endpoint, body) {
       headers: {
         'X-Shopify-Access-Token': accessToken,
         'Content-Type': 'application/json',
-        ...(bodyStr ? {'Content-Length': Buffer.byteLength(bodyStr)} : {})
+        ...(bodyStr ? { 'Content-Length': Buffer.byteLength(bodyStr) } : {})
       }
     };
     const req = https.request(options, res => {
@@ -124,9 +124,9 @@ function shopifyRequest(shopDomain, accessToken, method, endpoint, body) {
       res.on('data', chunk => (data += chunk));
       res.on('end', () => {
         try {
-          resolve({status: res.statusCode, body: data ? JSON.parse(data) : {}});
+          resolve({ status: res.statusCode, body: data ? JSON.parse(data) : {} });
         } catch {
-          resolve({status: res.statusCode, body: data});
+          resolve({ status: res.statusCode, body: data });
         }
       });
     });
@@ -171,7 +171,7 @@ async function resyncShop(shopDomain, accessToken) {
 
   // Create new script tag
   const createRes = await shopifyRequest(shopDomain, accessToken, 'POST', '/script_tags.json', {
-    script_tag: {event: 'onload', src: scriptSrc}
+    script_tag: { event: 'onload', src: scriptSrc }
   });
 
   if (createRes.status === 201) {
@@ -188,7 +188,7 @@ async function main() {
     if (shopOverride && tokenOverride) {
       // Direct mode: bypass Firestore entirely
       console.log(`🔍 Direct mode: ${shopOverride}`);
-      shops = [{shopifyDomain: shopOverride, accessToken: tokenOverride}];
+      shops = [{ shopifyDomain: shopOverride, accessToken: tokenOverride }];
     } else if (shopOverride) {
       const allShops = await getShops();
       const found = allShops.find(s => s.shopifyDomain === shopOverride);

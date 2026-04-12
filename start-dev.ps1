@@ -8,7 +8,7 @@ $env:GOOGLE_APPLICATION_CREDENTIALS = "$ROOT\serviceAccount.development.json"
 $env:NODE_ENV = "development"
 
 # Mở terminal mới cho emulators
-Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$ROOT'; `$env:GOOGLE_APPLICATION_CREDENTIALS='$ROOT\serviceAccount.development.json'; `$env:NODE_ENV='development'; .\node_modules\.bin\firebase emulators:start --only hosting,functions,pubsub"
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$ROOT'; `$env:GOOGLE_APPLICATION_CREDENTIALS='$ROOT\serviceAccount.development.json'; `$env:NODE_ENV='development'; .\node_modules\.bin\firebase emulators:start --only hosting,functions,pubsub,ui"
 
 # Mở terminal mới cho esbuild watch (functions)
 Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$ROOT'; yarn workspace @avada/functions run watch"
@@ -29,8 +29,9 @@ while (`$true) {
             if (`$currentUrl -ne `$lastUrl -and `$currentUrl -ne '') {
                 `$lastUrl = `$currentUrl
                 Write-Host ('URL moi: ' + `$currentUrl) -ForegroundColor Green
-                Write-Host 'Dang resync ScriptTag...' -ForegroundColor Cyan
+                Write-Host 'Dang resync ScriptTag va Webhook...' -ForegroundColor Cyan
                 node '$ROOT\scripts\resync-scripttag.js'
+                node '$ROOT\scripts\resync-webhook.js'
                 if (`$LASTEXITCODE -eq 0) {
                     Write-Host 'Resync thanh cong! Dang rebuild bundle...' -ForegroundColor Green
                     yarn --cwd '$ROOT/packages/scripttag' run build:dev

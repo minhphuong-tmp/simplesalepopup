@@ -1,0 +1,12 @@
+query getProductImage($id: ID!) {
+  product(id: $id) {
+    handle
+    images(first: 1) {
+      edges {
+        node {
+          url
+        }
+      }
+    }
+  }
+}

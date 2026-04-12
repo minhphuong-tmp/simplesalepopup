@@ -1,7 +1,7 @@
-import {getFunctions} from 'firebase-admin/functions';
+import { getFunctions } from 'firebase-admin/functions';
 import appConfig from '../config/app';
 import fetch from 'node-fetch';
-import {delay} from '@avada/utils/lib/delay';
+import { delay } from '@avada/utils/lib/delay';
 
 export const ENQUEUE_SUBSCRIBER_FUNC_NAME = 'enqueueSubscriber';
 
@@ -16,14 +16,6 @@ const getTaskQueue = functionName => {
 };
 
 /**
- * Enqueue a task for background processing via Cloud Tasks
- *
- * Usage:
- *   await enqueueTask({
- *     data: { type: 'processOrder', shopId: '123', orderId: '456' },
- *     opts: { scheduleDelaySeconds: 60 } // optional delay
- *   });
- *
  * @description
  * There is no local emulator for cloud task, so if there is delay, we use nodejs delay to handle on local
  * @link https://firebase.google.com/docs/functions/task-functions?gen=2nd
@@ -43,11 +35,11 @@ export async function enqueueTask({
     }
 
     return fetch(
-      `http://localhost:5011/${process.env.GCLOUD_PROJECT}/us-central1/${functionName}`,
+      `http://localhost:5001/${process.env.GCLOUD_PROJECT}/us-central1/${functionName}`,
       {
-        headers: {Accept: 'application/json', 'Content-Type': 'application/json'},
+        headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
         method: 'POST',
-        body: JSON.stringify({data})
+        body: JSON.stringify({ data })
       }
     );
   }

@@ -8,8 +8,6 @@ const allowShowOptions = [
 ];
 
 /**
- * Triggers tab — page restriction settings, wired to parent state
- *
  * @param {Object} settings - current settings values
  * @param {Function} onChange - handler(field, value)
  * @return {React.ReactElement}

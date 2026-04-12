@@ -3,8 +3,7 @@ import { loadGraphQL } from '@functions/helpers/graphql/graphqlHelpers';
 import { getShopById } from '@functions/repositories/shopRepository';
 import { upsertNotification } from '@functions/repositories/notificationsRepository';
 import { getSettingsByShopId, upsertSettings } from '@functions/repositories/settingsRepository';
-import { registerWebhooks } from '@functions/helpers/webhookHelpers';
-import { registerScriptTag } from '@functions/helpers/scriptTagHelpers';
+import { registerWebhooks } from '@functions/services/webhookService';
 
 const DEFAULT_SETTINGS = {
     position: 'bottom-left',
@@ -36,18 +35,12 @@ function mapOrderToNotification(order) {
 }
 
 async function syncOrdersToNotifications(shopId, shopify) {
-    console.log('[afterInstall] Loading GraphQL query...');
     const query = loadGraphQL('/orders.graphql');
-    console.log('[afterInstall] Running Shopify GraphQL...');
 
     const response = await shopify.graphql(query, {});
-    console.log('[afterInstall] GraphQL response keys:', Object.keys(response || {}));
-
     const orders = response?.orders?.edges?.map(edge => edge.node) || [];
-    console.log(`[afterInstall] Found ${orders.length} orders`);
 
     if (orders.length === 0) {
-        console.log('[afterInstall] No orders to sync');
         return 0;
     }
 
@@ -59,18 +52,15 @@ async function syncOrdersToNotifications(shopId, shopify) {
         })
     );
     const created = results.filter(Boolean).length;
-    console.log(`[afterInstall] Saved ${created} new notifications (${orders.length - created} skipped) for shop: ${shopId}`);
     return created;
 }
 
 async function createDefaultSettings(shopId) {
     const existing = await getSettingsByShopId(shopId);
     if (existing) {
-        console.log('[afterInstall] Settings already exist, skipping');
         return;
     }
     await upsertSettings(shopId, DEFAULT_SETTINGS);
-    console.log('[afterInstall] Default settings created');
 }
 
 /**
@@ -80,31 +70,22 @@ async function createDefaultSettings(shopId) {
  * @returns {Promise<void>}
  */
 export async function handleAfterInstall(shopId) {
-    console.log('[afterInstall] START for shopId:', shopId);
 
     const shopData = await getShopById(shopId);
-    console.log('[afterInstall] Shop data keys:', Object.keys(shopData || {}));
-    console.log('[afterInstall] Has accessToken:', !!shopData?.accessToken);
 
     const shopParsedData = require('@avada/core').prepareShopData
-        ? (() => { try { return require('@avada/core').prepareShopData(shopData.id, shopData, require('@functions/config/shopify').default.accessTokenKey); } catch (e) { return {}; } })()
+        ? (() => { try { return require('@avada/core').prepareShopData(shopData.id, shopData, require('@functions/config/shopify').default.accessTokenKey); } catch (error) { return {}; } })()
         : {};
-    console.log('[afterInstall] shopParsedData has accessToken:', !!shopParsedData?.accessToken);
 
     const shopify = initShopify(shopData);
-
-    console.log('[afterInstall] Shopify instance shopName:', shopData.shopifyDomain);
 
     try {
         const [syncedCount] = await Promise.all([
             syncOrdersToNotifications(shopId, shopify),
             createDefaultSettings(shopId),
-            registerWebhooks(shopData.shopifyDomain, shopData.accessToken, shopData),
-            registerScriptTag(shopData.shopifyDomain, shopData.accessToken, shopData)
+            registerWebhooks(shopData)
         ]);
-        console.log(`[afterInstall] DONE. Synced ${syncedCount} notifications`);
-    } catch (e) {
-        console.error('[afterInstall] FAILED:', e?.message, e?.response?.status, e?.response?.body);
-        throw e;
+    } catch (error) {
+        throw error;
     }
 }

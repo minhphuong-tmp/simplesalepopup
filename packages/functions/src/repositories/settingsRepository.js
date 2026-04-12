@@ -47,7 +47,7 @@ export async function upsertSettings(shopId, data) {
 
     const docRef = collection.doc(shopId);
     const existing = await docRef.get();
-
+    // if not exist, create new doc
     if (!existing.exists) {
         docData.createdAt = now;
         await docRef.set(docData);

@@ -18,10 +18,13 @@ import {toMs} from '@assets/helpers/utils/notificationUtils';
  */
 export default function NotificationItem(item) {
   const {id, firstName, city, country, productName, productImage, timestamp, createdAt} = item;
-  const displayDate = createdAt ? formatDateOnly(toMs(createdAt)) : '';
+  let displayDate = '';
+  if (createdAt) {
+    displayDate = formatDateOnly(toMs(createdAt));
+  }
 
   return (
-    <ResourceItem id={id}>
+    <ResourceItem id={id} accessibilityLabel={`View details for ${firstName} - ${productName}`}>
       <InlineStack align="space-between" blockAlign="center" wrap={false}>
         <NotificationPopup
           firstName={firstName}

@@ -11,8 +11,6 @@ const SLIDER_LIMITS = {
 };
 
 /**
- * Display tab — APPEARANCE + TIMING settings, wired to parent state
- *
  * @param {Object} settings - current settings values
  * @param {Function} onChange - handler(field, value)
  * @return {React.ReactElement}

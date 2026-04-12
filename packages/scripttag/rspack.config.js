@@ -1,6 +1,6 @@
 const path = require('path');
 const dotenv = require('dotenv');
-const {rspack} = require('@rspack/core');
+const { rspack } = require('@rspack/core');
 
 // Load environment variables based on NODE_ENV
 const getEnvPath = () => {
@@ -19,7 +19,7 @@ const getEnvPath = () => {
 
 // Load .env file
 const envPath = getEnvPath();
-const result = dotenv.config({path: envPath});
+const result = dotenv.config({ path: envPath });
 
 if (result.error) {
   console.warn(`⚠️  No ${envPath} file found. Using existing environment variables.`);
@@ -44,7 +44,7 @@ module.exports = {
   mode: isProduction ? 'production' : 'development',
   entry: ['./src/index.js'],
   devtool: isProduction ? false : 'eval-source-map',
-  experiments: {asyncWebAssembly: true, topLevelAwait: true},
+  experiments: { asyncWebAssembly: true, topLevelAwait: true },
   output: {
     path: path.resolve(__dirname, '../../static/scripttag'),
     filename: 'avada-storefront.min.js',

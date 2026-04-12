@@ -46,10 +46,6 @@ export default class DisplayManager {
   displayLoop = async () => {
     const { maxPopsDisplay, displayDuration, popsInterval } = this.settings;
 
-    if (this.displayCount >= (maxPopsDisplay || 10)) {
-      return; // Stop showing popups
-    }
-
     if (this.currentIndex >= this.notifications.length) {
       this.currentIndex = 0; // Loop back to the first notification if we run out
     }

@@ -13,7 +13,6 @@ export const getSettings = async ctx => {
     ctx.body = { success: true, data: data || {}, error: null };
   } catch (e) {
     console.error(e);
-    ctx.status = 500;
     ctx.body = { success: false, data: null, error: e.message };
   }
 };
@@ -30,7 +29,7 @@ export const updateSettings = async ctx => {
     ctx.status = 200;
     ctx.body = { success: result.success, data: null, error: null };
   } catch (e) {
-    ctx.status = 500;
+    console.error(e);
     ctx.body = { success: false, data: null, error: e.message };
   }
 };
