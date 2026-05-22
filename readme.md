@@ -1,189 +1,236 @@
-# app-name
+# Simple Sale Pop - Shopify Sales Notification App
 
-> Application tag line describe here
+Simple Sale Pop is a Shopify embedded app and Theme App Extension that displays real-time style sales notification popups on a merchant's storefront. The app syncs Shopify order data, stores notification records in Firestore, and lets merchants configure how popups are displayed on their store.
 
-## Preparation
+## Screenshots
 
-* [A Firebase account](https://firebase.google.com/)
+### Popup settings
 
-* A Firebase project
+![Popup settings](docs/screenshots/settings.png)
 
-* [A Shopify partner account](https://www.shopify.com/partners)
+### Notification list
 
-* A Shopify app in partner account
+![Notification list](docs/screenshots/notifications.png)
+
+## Main Features
+
+- Sync recent Shopify orders and convert them into sale notification records.
+- Display social-proof popups on the storefront.
+- Configure popup position, display duration, first delay, interval, and maximum number of popups.
+- Hide time ago text or truncate long product names.
+- Control where popups are shown using included/excluded URL rules.
+- View and manage synced notification data in the embedded Shopify admin app.
+- Automatically create default settings after app installation.
+- Listen to Shopify webhooks and process new orders in the background.
+- Provide storefront rendering through ScriptTag / Theme App Extension.
+
+## Tech Stack
+
+### Frontend
+
+- React 18
+- Vite
+- Shopify Polaris
+- Shopify App Bridge
+- React Router
+- React Hooks and Context API
+- SCSS/Sass
+
+### Backend
+
+- Node.js 22
+- Firebase Cloud Functions v2
+- Koa.js / Koa Router
+- Firebase Admin SDK
+- Firestore
+- Google Cloud Pub/Sub
+- Google Cloud Tasks
+- Cloud Scheduler
+
+### Shopify Integration
+
+- Shopify Admin API
+- Shopify GraphQL API
+- Shopify Webhooks
+- Shopify OAuth
+- Shopify Theme App Extension
+- Liquid
+- Storefront script injection
+
+### Tooling
+
+- Shopify CLI
+- Firebase CLI
+- Yarn Workspaces
+- ESBuild
+- ESLint / Prettier
+- Jest
+
+## Project Structure
+
+```txt
+.
+├── packages
+│   ├── assets        # React embedded admin app
+│   ├── functions     # Firebase Functions backend, API, services, repositories
+│   └── scripttag     # Customer-facing storefront popup script
+├── extensions
+│   └── theme-extension # Shopify Theme App Extension
+├── firestore-indexes
+├── firestore.rules
+├── firebase.json
+└── shopify.app.toml
+```
+
+## Core Modules
+
+### Admin App
+
+The admin interface is located in `packages/assets`. It includes pages for notification listing and popup settings. Shopify Polaris is used to build a UI that matches the Shopify admin experience.
+
+### Firebase Functions API
+
+The backend is located in `packages/functions`. It exposes APIs for:
+
+- Getting and updating popup settings
+- Syncing Shopify orders into notifications
+- Listing notification records
+- Shopify OAuth
+- Shopify webhook handling
+- Public widget data for the storefront script
+
+### Storefront Popup Script
+
+The storefront script is located in `packages/scripttag`. It fetches widget data from the public client API and renders notification popups on the merchant storefront according to the configured display rules.
+
+### Background Jobs
+
+The project uses Cloud Tasks and Pub/Sub to process asynchronous work such as syncing new orders and updating notification data without blocking admin requests.
 
 ## Installation
 
-* Choose a project staging for Firebase application
+### Prerequisites
+
+- Node.js 22
+- Yarn 4
+- Firebase CLI
+- Shopify CLI
+- Firebase project
+- Shopify Partner account and Shopify app
+
+### 1. Install dependencies
+
+```bash
+yarn install
+```
+
+### 2. Select Firebase project
 
 ```bash
 firebase use --add
 ```
 
-* Configure all settings for Firebase development environment by creating a new file `.env` inside the `packages/functions` (copy from `.env.example`)
+### 3. Configure backend environment
+
+Create `packages/functions/.env` from `packages/functions/.env.example` and update the values:
 
 ```dotenv
-# Shopify Configuration
 SHOPIFY_API_KEY=<Shopify API Key>
 SHOPIFY_SECRET=<Shopify Secret>
 SHOPIFY_FIREBASE_API_KEY=<Firebase API Key>
-SHOPIFY_SCOPES=read_themes
+SHOPIFY_SCOPES=read_themes,read_orders,read_products
 SHOPIFY_ACCESS_TOKEN_KEY=avada-apps-access-token
-
-# App Configuration
 APP_ENV=development
 APP_BASE_URL=<Your app base URL>
 ```
 
-* Create a file `.env.development` with content in [packages/assets](/packages/assets)
+### 4. Configure frontend environment
+
+Create `packages/assets/.env.development` from `packages/assets/.env.example`:
 
 ```dotenv
-VITE_SHOPIFY_API_KEY=<Insert here>
-VITE_FIREBASE_API_KEY=<Insert here>
-VITE_FIREBASE_AUTH_DOMAIN=<Insert here>
-VITE_FIREBASE_PROJECT_ID=<Insert here>
-VITE_FIREBASE_STORAGE_BUCKET=<Insert here>
-VITE_FIREBASE_APP_ID=<Insert here>
-VITE_FIREBASE_MEASUREMENT_ID=<Insert here>
+VITE_SHOPIFY_API_KEY=<Shopify API Key>
+VITE_FIREBASE_API_KEY=<Firebase API Key>
+VITE_FIREBASE_AUTH_DOMAIN=<Firebase Auth Domain>
+VITE_FIREBASE_PROJECT_ID=<Firebase Project ID>
+VITE_FIREBASE_STORAGE_BUCKET=<Firebase Storage Bucket>
+VITE_FIREBASE_APP_ID=<Firebase App ID>
+VITE_FIREBASE_MEASUREMENT_ID=<Firebase Measurement ID>
 ```
 
-* Create an empty Firestore database
-* Deploy the Firestore default indexes
+### 5. Deploy Firestore rules and indexes
+
 ```bash
 firebase deploy --only firestore
 ```
 
 ## Development
 
-* To start to develop, please run 2 below commands
+Run Shopify app development server:
 
 ```bash
-npm run dev
+yarn dev
 ```
+
+Run Firebase Functions locally:
 
 ```bash
-GOOGLE_APPLICATION_CREDENTIALS=<Path to service-account.json> firebase serve
+GOOGLE_APPLICATION_CREDENTIALS=<path-to-service-account.json> firebase serve
 ```
 
-## Lint
-
-* All your files must be passed [ESLint](https://eslint.org/):
-
-To setup a git hook before committing to Gitlab, please run:
+Or run the configured emulator script:
 
 ```bash
-cp git-hooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+yarn emulators
 ```
 
-## Where you can see all function logs
+## Build
 
-* You can see all logs from your functions by follow commands
+Build frontend and backend packages:
 
 ```bash
-firebase functions:log
+yarn predeploy
 ```
 
-* You also view in Web interface by access
+## Deployment
 
-![View all logs from Firebase web interface](https://i.imgur.com/SLYqnhS.png)
-
-## Common issues
-
-### When you open an embedded app in local, it can throw an error like that
-
-![Content Security Policy Error](https://raw.githubusercontent.com/baorv/faster-shopify-dev/master/screenshot.png)
-
-**Solution**
-
-Install [Disable Content-Security-Policy (CSP)](https://chrome.google.com/webstore/detail/disable-content-security/ieelmcmcagommplceebfedjlakkhpden) to disable CSP in Chromium browers
-
-### I got message `Unauthorized` after authentication
-
-**Solution**
-
-Go `https://console.firebase.google.com/u/0/project/{project-id}/settings/serviceaccounts/adminsdk`
-
-Click `Generate new private key`
-
-Use command to export global environment
+Deploy Firebase services:
 
 ```bash
-export GOOGLE_APPLICATION_CREDENTIALS=<Path to service-account.json>
+yarn deploy
 ```
 
-### I got message `PERMISSION_DENIED: Missing or insufficient permissions`
+Deploy Shopify app and extension:
 
-**Solution**
-
-Enable permission `Service Account Token Creator` for `user@appspot.gserviceaccount.com`
-
-![Enable Permission for appspot](https://firebasestorage.googleapis.com/v0/b/pdf-invoice-4717c.appspot.com/o/images%2Fdev-docs%2Fiam_enable_jwt_creator.png?alt=media&token=ea1a3c08-64e2-4519-a6fc-81620249dbbd)
-
-### I can't see `FIREBASE_MEASUREMENT_ID` in Firebase project
-
-**Solution**
-
-You can enable Analytics for your project from Firebase project
-
-![Enable Google Analytics on your app](https://firebasestorage.googleapis.com/v0/b/avada-development.appspot.com/o/images%2Fscreenshots%2Fenable_analytics.png?alt=media&token=559669e1-65d5-4e7b-b2dd-ce82517a262e)
-
-
-## AI-Assisted Development (Claude Code)
-
-This project supports agentic development workflows using Claude Code. See `CLAUDE.md` for detailed instructions.
-
-### Quick Commands
-
-| Command | Description |
-|---------|-------------|
-| `/plan [task]` | Create implementation plan for a feature |
-| `/fix [issue]` | Analyze and fix issues |
-| `/test` | Run tests and validate code quality |
-| `/debug [issue]` | Investigate and diagnose problems |
-| `/impact` | Analyze impact before merge request |
-| `/perf [target]` | Audit code for performance issues |
-| `/translate [feature]` | Update translations after adding labels |
-
-### Specialized Agents
-
-| Agent | Purpose |
-|-------|---------|
-| `planner` | Research and create implementation plans |
-| `debugger` | Investigate issues, analyze logs |
-| `tester` | Run tests, validate quality |
-| `code-reviewer` | Code review with Avada standards |
-| `security-auditor` | Security vulnerability analysis |
-| `performance-reviewer` | Audit performance and costs |
-| `shopify-app-tester` | MR impact and testing checklist |
-
-### Recommended Workflows
-
-**New Feature:**
-```
-/plan [feature] → implement → /test → /review → /impact
+```bash
+yarn deploy-shopify
 ```
 
-**Bug Fix:**
+## Useful Commands
+
+```bash
+# Start Shopify development mode
+yarn dev
+
+# Start Firebase emulators
+yarn emulators
+
+# Build Firestore indexes
+yarn firestore:build
+
+# Split Firestore indexes
+yarn firestore:split
+
+# Re-sync storefront script
+yarn resync-scripttag
+
+# Fix lint issues
+yarn eslint-fix
+
+# View Firebase function logs
+yarn logs
 ```
-/debug [issue] → /fix → /test
-```
 
-**Before Merge:**
-```
-/test → /review → /perf → /impact
-```
+## Notes
 
-### Skills Reference
-
-Skills documentation is available in `.claude/skills/` for:
-- `avada-architecture.md` - Project structure and coding standards
-- `firestore.md` - Firestore queries, batching, indexes
-- `bigquery.md` - Partitioning, clustering, cost control
-- `shopify-api.md` - API selection, bulk operations, webhooks
-- `backend.md` - Async patterns, functions config
-
-## TODO
-
-- [ ] Add testing
-- [x] CI/CD
-- [ ] Add document
+This project was built as a side project for learning and practicing Shopify app development, Theme App Extension, Firebase serverless architecture, Firestore, Shopify GraphQL API, webhooks, and storefront widget development.
